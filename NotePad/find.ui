@@ -33,25 +33,21 @@
    </property>
    <layout class="QFormLayout" name="formLayout_2">
     <item row="0" column="0">
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton_up">
-        <property name="text">
-         <string>위로(&amp;U)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_down">
-        <property name="text">
-         <string>아래로(&amp;D)</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QRadioButton" name="radioButton_up">
+      <property name="text">
+       <string>위로(&amp;U)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QRadioButton" name="radioButton_down">
+      <property name="text">
+       <string>아래로(&amp;D)</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
