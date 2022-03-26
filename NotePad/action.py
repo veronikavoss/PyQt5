@@ -50,15 +50,9 @@ class File(QMainWindow,UiClass):
         self.path=None
         self.text_changed=False
         self.plainTextEdit.textChanged.connect(self.checking_modify_document)
-        self.update_title()
+        self.checking_modify_document()
         
-        self.filter='텍스트 문서 (*.txt);;모든 파일 (*.*)'
-    
-    def update_title(self):
-        if self.text_changed:
-            self.setWindowTitle('*{} - 메모장'.format(os.path.basename(self.path) if self.path else '제목 없음'))
-        else:
-            self.setWindowTitle('{} - 메모장'.format(os.path.basename(self.path) if self.path else '제목 없음'))
+        self.filter_option='텍스트 문서 (*.txt);;모든 파일 (*.*)'
     
     def checking_modify_document(self):
         if self.original_document!=self.pte.toPlainText():
@@ -69,6 +63,12 @@ class File(QMainWindow,UiClass):
             print('not_modify',self.text_changed)
         self.update_title()
     
+    def update_title(self):
+        if self.text_changed:
+            self.setWindowTitle('*{} - 메모장'.format(os.path.basename(self.path) if self.path else '제목 없음'))
+        else:
+            self.setWindowTitle('{} - 메모장'.format(os.path.basename(self.path) if self.path else '제목 없음'))
+    
     def set_unknown_save(self):
         pass
     
@@ -76,13 +76,12 @@ class File(QMainWindow,UiClass):
         self.action_status='new'
         if self.text_changed:
             if not self.path:
-                print('save_as',self.text_changed)
-                self.set_new_file()
+                self.save_question_messagebox()
+                print('save_as')
             else:
+                self.save_question_messagebox()
                 print('save')
-                self.set_new_file()
-        else:
-            self.set_new_file()
+        self.set_new_file()
         self.update_title()
     
     def set_new_file(self):
@@ -94,12 +93,18 @@ class File(QMainWindow,UiClass):
     def run_open_file(self):
         self.action_status='open'
         if self.text_changed:
-            print('save_as')
+            self.save_question_messagebox()
+            if self.get_messagebox_button==0:
+                print('save_as')
+            elif self.get_messagebox_button==2:
+                print('cancel')
+                return
+            self.set_open_file()
         else:
             self.set_open_file()
     
     def set_open_file(self):
-        path,_=QFileDialog.getOpenFileName(self,'열기','',self.filter)
+        path,_=QFileDialog.getOpenFileName(self,'열기','',self.filter_option)
         if path:
             try:
                 with open(path,'r',encoding='ansi') as r:
@@ -114,7 +119,21 @@ class File(QMainWindow,UiClass):
                 self.pte.setPlainText(text)
     
     def save_question_messagebox(self):
-        pass
+        messagebox=QMessageBox()
+        messagebox.setWindowTitle('메모장')
+        messagebox.setText('변경 내용을 {}에 저장 하시겠습니까?'.format(os.path.basename(self.path) if self.path else '제목 없음'))
+        messagebox.addButton('저장(S)',QMessageBox.YesRole)
+        messagebox.addButton('저장 안 함(N)',QMessageBox.NoRole)
+        messagebox.addButton('취소',QMessageBox.RejectRole)
+        self.get_messagebox_button=messagebox.exec_()
+        print(self.get_messagebox_button)
+    
+    def run_save(self):
+        if self.path:
+            with open(self.path,'w',encoding='ansi') as w:
+                w.write(self.pte.toPlainText())
+                self.original_document=self.pte.toPlainText()
+                self.checking_modify_document()
 
 class Edit(File):
     def run_del(self):
