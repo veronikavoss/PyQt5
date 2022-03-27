@@ -70,13 +70,16 @@ class File(QMainWindow,UiClass):
     
     def run_new_file(self):
         if self.text_changed:
-            if not self.path:
-                if self.save_question_messagebox()==0:
-                    print('save_as')
+            self.save_question_messagebox()
+            if self.get_messagebox_button==0:
+                if not self.path:
                     self.run_save_as()
-            elif self.save_question_messagebox()==0:
-                print('save')
-                self.run_save()
+                else:
+                    self.run_save()
+            elif self.get_messagebox_button==1:
+                self.set_new_file()
+            elif self.get_messagebox_button==2:
+                return
         self.set_new_file()
         self.update_title()
     
@@ -90,9 +93,11 @@ class File(QMainWindow,UiClass):
         if self.text_changed:
             self.save_question_messagebox()
             if self.get_messagebox_button==0:
-                print('save_as')
+                if not self.path:
+                    self.run_save_as()
+                else:
+                    self.run_save()
             elif self.get_messagebox_button==2:
-                print('cancel')
                 return
             self.set_open_file()
         else:
@@ -121,7 +126,6 @@ class File(QMainWindow,UiClass):
         messagebox.addButton('저장 안 함(N)',QMessageBox.NoRole)
         messagebox.addButton('취소',QMessageBox.RejectRole)
         self.get_messagebox_button=messagebox.exec_()
-        return self.get_messagebox_button
     
     def run_save(self):
         if not self.path:
@@ -153,6 +157,19 @@ class File(QMainWindow,UiClass):
                 self.path=path
                 self.original_document=self.pte.toPlainText()
                 self.checking_modify_document()
+    
+    def closeEvent(self, event):
+        if self.text_changed:
+            self.save_question_messagebox()
+            if self.get_messagebox_button==0:
+                if not self.path:
+                    self.run_save_as()
+                else:
+                    self.run_save()
+            elif self.get_messagebox_button==1:
+                return
+            elif self.get_messagebox_button==2:
+                event.ignore()
 
 class Edit(File):
     def run_del(self):

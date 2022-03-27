@@ -12,7 +12,7 @@ class Main(Edit):
         self.action_open.triggered.connect(self.run_open_file)
         self.action_save.triggered.connect(self.run_save)
         self.action_save_as.triggered.connect(self.run_save_as)
-        self.action_exit.triggered.connect(self.close)
+        self.action_exit.triggered.connect(self.closeEvent)
     
     def set_edit_actions(self):
         self.action_undo.triggered.connect(lambda:self.plainTextEdit.undo())
