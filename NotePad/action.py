@@ -46,7 +46,6 @@ class File(QMainWindow,UiClass):
         self.setWindowIcon(QIcon(os.path.join(image_path,'notepad_icon.png')))
         self.pte=self.plainTextEdit
         self.original_document=self.pte.toPlainText()
-        self.action_status=None
         self.path=None
         self.text_changed=False
         self.plainTextEdit.textChanged.connect(self.checking_modify_document)
@@ -69,18 +68,15 @@ class File(QMainWindow,UiClass):
         else:
             self.setWindowTitle('{} - 메모장'.format(os.path.basename(self.path) if self.path else '제목 없음'))
     
-    def set_unknown_save(self):
-        pass
-    
     def run_new_file(self):
-        self.action_status='new'
         if self.text_changed:
             if not self.path:
-                self.save_question_messagebox()
-                print('save_as')
-            else:
-                self.save_question_messagebox()
+                if self.save_question_messagebox()==0:
+                    print('save_as')
+                    self.run_save_as()
+            elif self.save_question_messagebox()==0:
                 print('save')
+                self.run_save()
         self.set_new_file()
         self.update_title()
     
@@ -91,7 +87,6 @@ class File(QMainWindow,UiClass):
         self.path=None
     
     def run_open_file(self):
-        self.action_status='open'
         if self.text_changed:
             self.save_question_messagebox()
             if self.get_messagebox_button==0:
@@ -126,12 +121,36 @@ class File(QMainWindow,UiClass):
         messagebox.addButton('저장 안 함(N)',QMessageBox.NoRole)
         messagebox.addButton('취소',QMessageBox.RejectRole)
         self.get_messagebox_button=messagebox.exec_()
-        print(self.get_messagebox_button)
+        return self.get_messagebox_button
     
     def run_save(self):
-        if self.path:
-            with open(self.path,'w',encoding='ansi') as w:
-                w.write(self.pte.toPlainText())
+        if not self.path:
+            self.run_save_as()
+        else:
+            try:
+                with open(self.path,'w',encoding='ansi') as w:
+                    w.write(self.pte.toPlainText())
+                    w.close()
+            except Exception as e:
+                print(e)
+            else:
+                self.original_document=self.pte.toPlainText()
+                self.checking_modify_document()
+    
+    def run_save_as(self):
+        path,_=QFileDialog.getSaveFileName(self,'다른 이름으로 저장','',self.filter_option)
+        document=self.pte.toPlainText()
+        if not path:
+            return
+        else:
+            try:
+                with open(path,'w',encoding='ansi') as w:
+                    w.write(document)
+                    w.close()
+            except Exception as e:
+                print(e)
+            else:
+                self.path=path
                 self.original_document=self.pte.toPlainText()
                 self.checking_modify_document()
 

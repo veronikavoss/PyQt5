@@ -11,7 +11,7 @@ class Main(Edit):
         self.action_new.triggered.connect(self.run_new_file)
         self.action_open.triggered.connect(self.run_open_file)
         self.action_save.triggered.connect(self.run_save)
-        # self.action_save_as.triggered.connect(self.run_save_as)
+        self.action_save_as.triggered.connect(self.run_save_as)
         self.action_exit.triggered.connect(self.close)
     
     def set_edit_actions(self):
